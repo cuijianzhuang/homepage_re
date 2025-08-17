@@ -180,6 +180,13 @@ document.addEventListener('DOMContentLoaded', function() {
     setInitialBackground();
     fallbackHitokoto();
     
+    // 确保所有section初始状态正确
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => {
+        section.style.transform = 'translateY(100%)';
+        section.style.visibility = 'hidden';
+    });
+    
     // 异步加载外部资源，不阻塞页面渲染
     requestAnimationFrame(() => {
         getBingWallpaper();
@@ -202,17 +209,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 设置当前活动的导航项
     setActiveNavItem();
 
-    // 监听hash变化，添加平滑过渡
-    window.addEventListener('hashchange', function() {
-        // 添加平滑过渡效果
-        document.body.style.transition = 'opacity 0.3s ease';
-        document.body.style.opacity = '0.8';
-        
-        setTimeout(() => {
-            setActiveNavItem();
-            document.body.style.opacity = '1';
-        }, 150);
-    });
+    // 监听hash变化
+    window.addEventListener('hashchange', setActiveNavItem);
 
 
     
@@ -347,27 +345,10 @@ function cleanUrl() {
 function navigateToHome() {
     // 优雅地返回主页
     if (window.location.hash) {
-        // 添加返回动画效果
-        const currentSection = document.querySelector('.section:target');
-        if (currentSection) {
-            currentSection.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
-            currentSection.style.transform = 'translateY(100%)';
-            currentSection.style.opacity = '0';
-        }
-        
-        // 延迟执行导航，让动画有时间播放
-        setTimeout(() => {
-            // 使用 pushState 而不是 replaceState，这样用户可以正常使用浏览器的前进后退
-            history.pushState(null, document.title, window.location.pathname);
-            // 触发导航状态更新
-            setActiveNavItem();
-            
-            // 重置section样式
-            if (currentSection) {
-                currentSection.style.transform = '';
-                currentSection.style.opacity = '';
-            }
-        }, 400);
+        // 直接更新URL，不使用动画避免冲突
+        history.pushState(null, document.title, window.location.pathname);
+        // 触发导航状态更新
+        setActiveNavItem();
     }
 }
 
@@ -381,19 +362,33 @@ window.addEventListener('popstate', function() {
 // 设置当前活动的导航项
 function setActiveNavItem() {
     const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.section');
     const hash = window.location.hash;
 
     // 移除所有active类
     navItems.forEach(item => item.classList.remove('active'));
 
-    // 根据当前hash设置active类
+    // 隐藏所有section
+    sections.forEach(section => {
+        section.style.transform = 'translateY(100%)';
+        section.style.visibility = 'hidden';
+    });
+
+    // 根据当前hash设置active类和显示对应section
     if (hash && hash !== '#') {
         const activeItem = document.querySelector(`.nav-item[href="${hash}"]`);
+        const targetSection = document.querySelector(hash);
+        
         if (activeItem) {
             activeItem.classList.add('active');
         }
+        
+        if (targetSection) {
+            targetSection.style.transform = 'translateY(0)';
+            targetSection.style.visibility = 'visible';
+        }
     }
-    // 如果没有hash或只有#，则不设置任何活动项
+    // 如果没有hash或只有#，则不设置任何活动项，所有section保持隐藏
 }
 
 document.addEventListener('click', function(e) {

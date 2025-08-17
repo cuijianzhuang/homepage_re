@@ -258,6 +258,12 @@ body::before {
     visibility: visible;
 }
 
+/* 当没有hash时，确保所有section都隐藏 */
+.section {
+    transform: translateY(100%);
+    visibility: hidden;
+}
+
 .back-btn {
     position: fixed;
     top: 2rem;
