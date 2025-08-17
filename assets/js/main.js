@@ -25,20 +25,10 @@ function debounce(func, delay = 300) {
     };
 }
 
-// 设置初始渐变背景
+// 设置初始背景 - 使用简洁的深色背景
 function setInitialBackground() {
-    const gradients = [
-        'linear-gradient(to right, #4568dc, #b06ab3)',
-        'linear-gradient(to right, #2980b9, #6dd5fa)',
-        'linear-gradient(to right, #403b4a, #e7e9bb)',
-        'linear-gradient(to right, #334d50, #cbcaa5)',
-        'linear-gradient(to right, #5f2c82, #49a09d)'
-    ];
-    
-    // 随机选择一个渐变
-    const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
-    
-    document.body.style.backgroundImage = randomGradient;
+    // 使用简洁的深色背景，避免在壁纸加载前显示花哨的渐变
+    document.body.style.background = '#121212';
     document.body.style.backgroundSize = 'cover';
     document.body.style.backgroundPosition = 'center';
     document.body.style.backgroundRepeat = 'no-repeat';
@@ -48,7 +38,7 @@ function setInitialBackground() {
 
 // 获取必应每日壁纸 - 优化版本，不阻塞首屏加载
 function getBingWallpaper() {
-    // 先设置渐变背景，立即显示
+    // 先设置简洁背景，立即显示
     setInitialBackground();
     
     // 延迟加载壁纸，避免阻塞首屏
@@ -64,7 +54,7 @@ function getBingWallpaper() {
         };
         
         img.onerror = () => {
-            console.warn('获取必应壁纸失败，保持渐变背景');
+            console.warn('获取必应壁纸失败，保持简洁背景');
             // 不再尝试备用API，避免额外延迟
         };
 
@@ -74,7 +64,7 @@ function getBingWallpaper() {
         // 缩短超时时间
         setTimeout(() => {
             if (!img.complete) {
-                console.warn('获取必应壁纸超时，保持渐变背景');
+                console.warn('获取必应壁纸超时，保持简洁背景');
             }
         }, 2000);
     }, 100); // 延迟100ms开始加载
