@@ -46,39 +46,38 @@ function setInitialBackground() {
     document.body.style.transition = 'background-image 1.5s ease-in-out';
 }
 
-// 获取必应每日壁纸
+// 获取必应每日壁纸 - 优化版本，不阻塞首屏加载
 function getBingWallpaper() {
-    // 先设置渐变背景
+    // 先设置渐变背景，立即显示
     setInitialBackground();
     
-    const img = new Image();
-    
-    // 设置加载和错误处理
-    img.onload = () => {
-        // 使用requestAnimationFrame和setTimeout组合优化渲染性能
-        requestAnimationFrame(() => {
-            setTimeout(() => {
-                document.body.style.backgroundImage = `url(${img.src})`;
-            }, 300); // 给渐变背景一点展示时间
-        });
-    };
-    
-    img.onerror = () => {
-        console.error('获取必应壁纸失败，尝试备用API');
-        tryFallbackWallpaper();
-    };
-
-    // 添加缓存破坏参数
-    const timestamp = new Date().getTime();
-    img.src = `${CONFIG.BING_WALLPAPER_URL}?t=${timestamp}`;
-    
-    // 设置超时，3秒后如果图片还未加载则尝试备用
+    // 延迟加载壁纸，避免阻塞首屏
     setTimeout(() => {
-        if (!img.complete) {
-            console.warn('获取必应壁纸超时，尝试备用API');
-            tryFallbackWallpaper();
-        }
-    }, 3000);
+        const img = new Image();
+        
+        // 设置加载和错误处理
+        img.onload = () => {
+            // 使用requestAnimationFrame优化渲染性能
+            requestAnimationFrame(() => {
+                document.body.style.backgroundImage = `url(${img.src})`;
+            });
+        };
+        
+        img.onerror = () => {
+            console.warn('获取必应壁纸失败，保持渐变背景');
+            // 不再尝试备用API，避免额外延迟
+        };
+
+        // 移除缓存破坏参数，允许浏览器缓存
+        img.src = CONFIG.BING_WALLPAPER_URL;
+        
+        // 缩短超时时间
+        setTimeout(() => {
+            if (!img.complete) {
+                console.warn('获取必应壁纸超时，保持渐变背景');
+            }
+        }, 2000);
+    }, 100); // 延迟100ms开始加载
 }
 
 // 尝试使用备用壁纸API
@@ -108,12 +107,18 @@ function tryFallbackWallpaper() {
 
 // 已删除未使用的setBackground函数
 
-// 获取一言
+// 获取一言 - 优化版本，不阻塞页面加载
 async function getHitokoto() {
+    // 先显示备用内容，避免空白
+    fallbackHitokoto();
+    
     try {
-        // 创建一个超时控制
+        // 延迟请求，避免阻塞首屏
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // 创建一个超时控制，缩短超时时间
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3秒超时
+        const timeoutId = setTimeout(() => controller.abort(), 1500); // 1.5秒超时
         
         // 使用fetch请求一言API
         const response = await fetch(CONFIG.HITOKOTO_API, {
@@ -127,29 +132,28 @@ async function getHitokoto() {
         
         const data = await response.json();
         
-        // 添加淡入效果
+        // 获取元素
         const hitokotoText = document.querySelector('.hitokoto-text');
         const hitokotoFrom = document.querySelector('.hitokoto-from');
         
-        // 设置透明度为0
-        hitokotoText.style.opacity = '0';
-        hitokotoFrom.style.opacity = '0';
-        
-        // 更新文本内容 - 使用API返回的数据
-        hitokotoText.textContent = data.hitokoto;
-        hitokotoFrom.textContent = `- [${data.from}]`;
-        
-        // 使用setTimeout实现淡入效果
-        setTimeout(() => {
-            hitokotoText.style.transition = 'opacity 0.8s ease';
-            hitokotoFrom.style.transition = 'opacity 0.8s ease';
-            hitokotoText.style.opacity = '1';
-            hitokotoFrom.style.opacity = '1';
-        }, 100);
+        if (hitokotoText && hitokotoFrom) {
+            // 平滑更新内容
+            hitokotoText.style.transition = 'opacity 0.3s ease';
+            hitokotoFrom.style.transition = 'opacity 0.3s ease';
+            hitokotoText.style.opacity = '0.5';
+            hitokotoFrom.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                hitokotoText.textContent = data.hitokoto;
+                hitokotoFrom.textContent = `- [${data.from}]`;
+                hitokotoText.style.opacity = '1';
+                hitokotoFrom.style.opacity = '1';
+            }, 150);
+        }
         
     } catch (error) {
-        console.error('获取一言失败:', error);
-        fallbackHitokoto();
+        console.warn('获取一言失败，使用备用内容:', error.message);
+        // 已经显示了备用内容，无需再次处理
     }
 }
 
@@ -179,14 +183,15 @@ function fallbackHitokoto() {
 // 包含：自动设置年份、返回按钮处理、表单处理、导航高亮等
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 并行加载资源
-    Promise.all([
-        new Promise(resolve => {
-            getBingWallpaper();
-            resolve();
-        }),
-        getHitokoto()
-    ]).catch(err => console.error('资源加载错误:', err));
+    // 立即设置基础内容，不等待外部资源
+    setInitialBackground();
+    fallbackHitokoto();
+    
+    // 异步加载外部资源，不阻塞页面渲染
+    requestAnimationFrame(() => {
+        getBingWallpaper();
+        getHitokoto();
+    });
 
     // 自动设置年份
     var yearSpan = document.getElementById('current-year');
@@ -215,26 +220,60 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 不再定期更新一言，仅在页面刷新时获取新内容
     
-    // 优化加载动画移除时机
+    // 优化加载动画移除时机 - 配合新动画
     const removeLoading = () => {
         const loadingElement = document.getElementById('global-loading');
         if (loadingElement) {
-            loadingElement.classList.add('hide');
+            // 添加完成状态
+            loadingElement.classList.add('completing');
+            
+            // 进度条快速完成动画
+            const progressBar = loadingElement.querySelector('.progress-bar');
+            if (progressBar) {
+                progressBar.style.animation = 'progress-complete 0.5s ease-out forwards';
+            }
+            
+            // 延迟后隐藏
             setTimeout(() => {
-                loadingElement.style.display = 'none';
+                loadingElement.classList.add('hide');
+                setTimeout(() => {
+                    loadingElement.style.display = 'none';
+                }, 400);
             }, 300);
         }
     };
 
-    // 检查字体加载状态
-    if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => {
-            setTimeout(removeLoading, 200);
-        });
-    } else {
-        // 备用方案：固定时间后移除
-        setTimeout(removeLoading, 800);
-    }
+    // 字体加载优化 - 异步检测
+    const fontLoadPromise = new Promise((resolve) => {
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => {
+                document.documentElement.classList.add('font-loaded');
+                resolve();
+            });
+        } else {
+            // 备用方案：延迟添加字体类
+            setTimeout(() => {
+                document.documentElement.classList.add('font-loaded');
+                resolve();
+            }, 1000);
+        }
+    });
+    
+    // 设置最小显示时间，让用户能看到加载动画
+    const minLoadingTime = 2500; // 最少显示2.5秒
+    const startTime = Date.now();
+    
+    // 延迟移除loading，确保动画完整播放
+    setTimeout(() => {
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
+        setTimeout(removeLoading, remainingTime);
+    }, 500);
+    
+    // 字体加载完成后进行优化
+    fontLoadPromise.then(() => {
+        console.log('字体加载完成');
+    });
 
     // 友链表单提交处理
     var form = document.getElementById('friend-link-form');

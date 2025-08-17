@@ -20,32 +20,11 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow-x: hidden;
         }
-        #global-loading { 
-            position: fixed; 
-            z-index: 9999; 
-            inset: 0; 
-            background: #121212; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            color: #fff; 
-            font-size: 1.2rem; 
-            transition: opacity 0.3s;
-        }
-        .spinner { 
-            width: 48px; 
-            height: 48px; 
-            border: 5px solid #fff; 
-            border-top: 5px solid #4a89dc; 
-            border-radius: 50%; 
-            animation: spin 1s linear infinite; 
-            margin-bottom: 1rem; 
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        #global-loading.hide { opacity: 0; pointer-events: none; }
+
         .container { position: relative; z-index: 2; min-height: 100vh; }
         .content { text-align: center; color: white; padding: 2rem; }
+        
+
     </style>
     
     <!-- 临时控制台清理脚本，可在调试完成后移除 -->
@@ -78,50 +57,112 @@
     <link rel="apple-touch-icon" href="assets/img/logo.png">
     <link rel="manifest" href="/manifest.json">
     
-    <!-- 资源预加载和预连接 -->
-    <link rel="preload" href="https://v.api.aa1.cn/api/yiyan/index.php" as="fetch" crossorigin>
-    <link rel="preconnect" href="https://v.api.aa1.cn">
-    <link rel="preconnect" href="https://bing.img.run">
-    <link rel="dns-prefetch" href="https://v.api.aa1.cn">
-    <link rel="dns-prefetch" href="https://bing.img.run">
+    <!-- 资源预连接 - 仅保留关键CDN -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://unpkg.com" crossorigin>
-    <link rel="preconnect" href="https://giscus.app" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     
-    <!-- 关键CSS内联加载，避免FOUC -->
+    <!-- 延迟预连接非关键资源 -->
+    <script>
+        setTimeout(() => {
+            const links = [
+                'https://v.api.aa1.cn',
+                'https://bing.img.run'
+            ];
+            links.forEach(url => {
+                const link = document.createElement('link');
+                link.rel = 'dns-prefetch';
+                link.href = url;
+                document.head.appendChild(link);
+            });
+        }, 1000);
+    </script>
+    
+    <!-- 关键CSS优先加载 -->
     <link rel="stylesheet" href="assets/css/style.css">
-      <!-- 字体图标延迟加载 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
-          crossorigin="anonymous" referrerpolicy="no-referrer" 
-          media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     
-    <!-- Remix Icon -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" 
-          media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"></noscript>
+    <!-- Sakana Widget CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.css">
+    
+    <!-- 字体图标延迟加载，进一步优化 -->
+    <script>
+        // 延迟加载图标字体，避免阻塞首屏
+        function loadIconFonts() {
+            const iconStyles = [
+                {
+                    href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+                    integrity: 'sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=='
+                },
+                {
+                    href: 'https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css'
+                }
+            ];
+            
+            iconStyles.forEach(style => {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = style.href;
+                if (style.integrity) link.integrity = style.integrity;
+                link.crossOrigin = 'anonymous';
+                link.referrerPolicy = 'no-referrer';
+                document.head.appendChild(link);
+            });
+        }
+        
+        // 页面加载完成后再加载图标
+        setTimeout(loadIconFonts, 500);
+    </script>
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
+    </noscript>
     
     
     <link rel="preload" href="/assets/fonts/LXGWWenKai-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+    
+    <!-- 字体加载优化 -->
+    <style>
+        /* 字体加载期间使用系统字体 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        }
+        
+        /* 字体加载完成后应用自定义字体 */
+        .font-loaded body {
+            font-family: 'LXGW WenKai', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        /* 快速移除loading的辅助样式 */
+        .quick-load #global-loading {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+    
+    <!-- 移除加载动画，直接显示主页面 -->
+    <script>
+        // 立即隐藏加载页面
+        document.addEventListener('DOMContentLoaded', function() {
+            const loading = document.getElementById('global-loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
 </head>
 <body>
-<div id="global-loading">
-  <div class="spinner"></div>
-  <div class="loading-text">正在加载...</div>
-</div>
+
     <main class="container" role="main">
         <div class="content">
             <header>
                 <div class="logo">
-                    <img src="assets/img/logo.png" alt="CJZ Logo" width="120" height="120" loading="eager">
+                    <img src="assets/img/logo.png" alt="CJZ Logo" width="120" height="120" loading="eager" fetchpriority="high">
                 </div>
                 <p class="subtitle" aria-label="问候语">hi 👋,I'm CJZ</p>   <!-- 𝐇𝐢 👋, 𝐈'𝐦 𝐃𝐞𝐞𝐫 -->
             </header>
                 
             <div class="hitokoto" aria-live="polite">
-                <p class="hitokoto-text">加载中...</p>
-                <p class="hitokoto-from">- [加载中...]</p>
+                <p class="hitokoto-text">一个人之所以幸福，并不是他得天独厚，只是那个人心想着幸福</p>
+                <p class="hitokoto-from">- [每日一言]</p>
             </div>
             
             <nav class="navigation" aria-label="主导航">
@@ -221,21 +262,21 @@
                     <h3><i class="fas fa-code" aria-hidden="true"></i> 开发工具</h3>
                     <div class="nav-links">
                         <a class="nav-link-item" href="https://github.com" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/github.com" alt="GitHub" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/github.com" alt="GitHub" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">GitHub</div>
                                 <div class="nav-desc">代码托管平台</div>
                             </div>
                         </a>
                         <a class="nav-link-item" href="https://stackoverflow.com" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/stackoverflow.com" alt="Stack Overflow" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/stackoverflow.com" alt="Stack Overflow" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">Stack Overflow</div>
                                 <div class="nav-desc">程序员问答社区</div>
                             </div>
                         </a>
                         <a class="nav-link-item" href="https://developer.mozilla.org" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/developer.mozilla.org" alt="MDN Web Docs" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/developer.mozilla.org" alt="MDN Web Docs" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">MDN Web Docs</div>
                                 <div class="nav-desc">Web开发文档</div>
@@ -249,21 +290,21 @@
                     <h3><i class="fas fa-graduation-cap" aria-hidden="true"></i> 学习资源</h3>
                     <div class="nav-links">
                         <a class="nav-link-item" href="https://www.w3schools.com" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/w3schools.com" alt="W3Schools" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/w3schools.com" alt="W3Schools" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">W3Schools</div>
                                 <div class="nav-desc">Web技术教程</div>
                             </div>
                         </a>
                         <a class="nav-link-item" href="https://www.freecodecamp.org" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/freecodecamp.org" alt="freeCodeCamp" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/freecodecamp.org" alt="freeCodeCamp" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">freeCodeCamp</div>
                                 <div class="nav-desc">免费编程学习平台</div>
                             </div>
                         </a>
                         <a class="nav-link-item" href="https://www.udemy.com" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/udemy.com" alt="Udemy" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/udemy.com" alt="Udemy" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">Udemy</div>
                                 <div class="nav-desc">在线课程平台</div>
@@ -277,21 +318,21 @@
                     <h3><i class="fas fa-tools" aria-hidden="true"></i> 实用工具</h3>
                     <div class="nav-links">
                         <a class="nav-link-item" href="https://www.canva.com" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/canva.com" alt="Canva" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/canva.com" alt="Canva" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">Canva</div>
                                 <div class="nav-desc">在线设计工具</div>
                             </div>
                         </a>
                         <a class="nav-link-item" href="https://www.notion.so" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/notion.so" alt="Notion" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/notion.so" alt="Notion" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">Notion</div>
                                 <div class="nav-desc">笔记和协作工具</div>
                             </div>
                         </a>
                         <a class="nav-link-item" href="https://www.figma.com" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/figma.com" alt="Figma" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/figma.com" alt="Figma" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">Figma</div>
                                 <div class="nav-desc">UI/UX设计工具</div>
@@ -305,21 +346,21 @@
                     <h3><i class="fas fa-gamepad" aria-hidden="true"></i> 娱乐休闲</h3>
                     <div class="nav-links">
                         <a class="nav-link-item" href="https://www.youtube.com" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/youtube.com" alt="YouTube" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/youtube.com" alt="YouTube" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">YouTube</div>
                                 <div class="nav-desc">视频分享平台</div>
                             </div>
                         </a>
                         <a class="nav-link-item" href="https://www.bilibili.com" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/bilibili.com" alt="哔哩哔哩" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/bilibili.com" alt="哔哩哔哩" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">哔哩哔哩</div>
                                 <div class="nav-desc">视频弹幕网站</div>
                             </div>
                         </a>
                         <a class="nav-link-item" href="https://music.163.com" target="_blank" rel="noopener">
-                            <img src="https://www.faviconextractor.com/favicon/music.163.com" alt="网易云音乐" width="32" height="32" class="nav-icon">
+                            <img src="https://www.faviconextractor.com/favicon/music.163.com" alt="网易云音乐" width="32" height="32" class="nav-icon" loading="lazy">
                             <div>
                                 <div class="nav-name">网易云音乐</div>
                                 <div class="nav-desc">音乐播放平台</div>
@@ -342,8 +383,74 @@
         </div>
     </footer>
 
+    <!-- Sakana Widget 容器 -->
+    <div id="sakana-widget"></div>
+    
     <!-- 主脚本延迟加载 -->
     <script src="assets/js/main.js" defer></script>
+    
+    <!-- Sakana Widget 脚本 -->
+    <script>
+        function initSakanaWidget() {
+            // 检查用户是否更喜欢减少动画
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            
+            // 创建 Sakana Widget 实例并配置
+            const widget = new SakanaWidget({
+                size: 200,              // 组件大小
+                autoFit: true,          // 自动适应尺寸
+                character: 'chisato',   // 默认角色：千束
+                controls: true,         // 显示控制栏
+                rod: true,              // 显示弹簧杆
+                draggable: true,        // 可拖拽
+                stroke: {
+                    color: '#4a89dc',   // 弹簧颜色（使用网站主色调）
+                    width: 8
+                },
+                threshold: prefersReducedMotion ? 0.5 : 0.1,  // 如果用户偏好减少动画，则提高阈值
+                rotate: 0,              // 旋转原点
+                title: false            // 禁用标题提示
+            }).mount('#sakana-widget');
+            
+            // 添加一些趣味功能
+            // 定期自动触发（可选）
+            if (!prefersReducedMotion) {
+                let autoTriggerTimer;
+                const startAutoTrigger = () => {
+                    autoTriggerTimer = setInterval(() => {
+                        // 随机触发自动模式
+                        if (Math.random() > 0.7) {
+                            widget.triggetAutoMode();
+                        }
+                    }, 30000); // 每30秒检查一次
+                };
+                
+                // 页面可见时启动，不可见时停止
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        clearInterval(autoTriggerTimer);
+                    } else {
+                        startAutoTrigger();
+                    }
+                });
+                
+                // 初始启动
+                if (!document.hidden) {
+                    startAutoTrigger();
+                }
+            }
+            
+            // 存储到全局变量，方便调试
+            window.sakanaWidget = widget;
+            
+            console.log('🐟 Sakana Widget 已加载! 你可以拖拽它或者使用控制栏切换角色。');
+        }
+    </script>
+    <script
+        async
+        onload="initSakanaWidget()"
+        src="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.js"
+    ></script>
     
     <!-- 结构化数据 -->
     <script type="application/ld+json">
