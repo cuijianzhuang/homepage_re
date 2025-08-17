@@ -72,13 +72,13 @@ function getBingWallpaper() {
     const timestamp = new Date().getTime();
     img.src = `${CONFIG.BING_WALLPAPER_URL}?t=${timestamp}`;
     
-    // 设置超时，5秒后如果图片还未加载则尝试备用
+    // 设置超时，3秒后如果图片还未加载则尝试备用
     setTimeout(() => {
         if (!img.complete) {
             console.warn('获取必应壁纸超时，尝试备用API');
             tryFallbackWallpaper();
         }
-    }, 5000);
+    }, 3000);
 }
 
 // 尝试使用备用壁纸API
@@ -103,7 +103,7 @@ function tryFallbackWallpaper() {
         if (!backupImg.complete) {
             console.warn('备用壁纸API超时，保留渐变背景');
         }
-    }, 3000);
+    }, 2000);
 }
 
 // 已删除未使用的setBackground函数
@@ -215,13 +215,26 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 不再定期更新一言，仅在页面刷新时获取新内容
     
-    // 等待字体和背景图片都加载好后再移除 loading
-    setTimeout(() => {
-        document.getElementById('global-loading').classList.add('hide');
-        setTimeout(() => {
-            document.getElementById('global-loading').style.display = 'none';
-        }, 500);
-    }, 300); // 可根据实际情况调整延迟
+    // 优化加载动画移除时机
+    const removeLoading = () => {
+        const loadingElement = document.getElementById('global-loading');
+        if (loadingElement) {
+            loadingElement.classList.add('hide');
+            setTimeout(() => {
+                loadingElement.style.display = 'none';
+            }, 300);
+        }
+    };
+
+    // 检查字体加载状态
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+            setTimeout(removeLoading, 200);
+        });
+    } else {
+        // 备用方案：固定时间后移除
+        setTimeout(removeLoading, 800);
+    }
 
     // 友链表单提交处理
     var form = document.getElementById('friend-link-form');

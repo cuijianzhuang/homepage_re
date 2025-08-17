@@ -10,6 +10,44 @@
     <meta name="robots" content="index, follow">
     <title>CJZ - homepage</title>
     
+    <!-- 关键样式内联，防止FOUC -->
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: #121212; 
+            color: white; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+        #global-loading { 
+            position: fixed; 
+            z-index: 9999; 
+            inset: 0; 
+            background: #121212; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            color: #fff; 
+            font-size: 1.2rem; 
+            transition: opacity 0.3s;
+        }
+        .spinner { 
+            width: 48px; 
+            height: 48px; 
+            border: 5px solid #fff; 
+            border-top: 5px solid #4a89dc; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin-bottom: 1rem; 
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #global-loading.hide { opacity: 0; pointer-events: none; }
+        .container { position: relative; z-index: 2; min-height: 100vh; }
+        .content { text-align: center; color: white; padding: 2rem; }
+    </style>
+    
     <!-- 临时控制台清理脚本，可在调试完成后移除 -->
     <script>
         console.clear();
@@ -50,10 +88,9 @@
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://giscus.app" crossorigin>
     
-    <!-- 关键CSS内联（实际项目中可以使用构建工具自动生成） -->
-    <link rel="stylesheet" href="assets/css/style.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="assets/css/style.css"></noscript>
-      <!-- 异步加载字体图标 -->
+    <!-- 关键CSS内联加载，避免FOUC -->
+    <link rel="stylesheet" href="assets/css/style.css">
+      <!-- 字体图标延迟加载 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
           integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
           crossorigin="anonymous" referrerpolicy="no-referrer" 
@@ -66,8 +103,7 @@
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"></noscript>
     
     
-    <link rel="preload" href="/assets/fonts/NotoSansSC-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-    <link rel="preload" href="/assets/fonts/NotoSansSC-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="/assets/fonts/LXGWWenKai-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
 </head>
 <body>
 <div id="global-loading">
@@ -78,7 +114,7 @@
         <div class="content">
             <header>
                 <div class="logo">
-                    <img src="assets/img/logo.png" alt="Deer Logo" width="120" height="120" loading="eager">
+                    <img src="assets/img/logo.png" alt="CJZ Logo" width="120" height="120" loading="eager">
                 </div>
                 <p class="subtitle" aria-label="问候语">hi 👋,I'm CJZ</p>   <!-- 𝐇𝐢 👋, 𝐈'𝐦 𝐃𝐞𝐞𝐫 -->
             </header>
@@ -91,8 +127,6 @@
             <nav class="navigation" aria-label="主导航">
                 <a href="https://blog.cuijianzhuang.com" class="nav-item" rel="noopener" target="_blank">博客</a>
                 <a href="#navigation" class="nav-item">导航</a>
-                <a href="#guestbook" class="nav-item">留言</a>
-                <a href="#friends" class="nav-item">友链</a>
                 <a href="#about" class="nav-item">关于</a>
             </nav>
         </div>
@@ -143,90 +177,6 @@
             </div>
         </div>
     </section>
-    
-    <!-- 留言板 -->
-<!--    <section id="guestbook" class="section" aria-label="留言板">-->
-<!--        <div class="about-container">-->
-<!--            <a href="#" class="back-btn" id="back-btn-guestbook"><i class="fas fa-arrow-left" aria-hidden="true"></i> <span>返回</span></a>-->
-<!--            <h2 class="section-title">留言板</h2>-->
-<!--            -->
-<!--            <div class="guestbook-intro">-->
-<!--                <p>欢迎在这里留下您的想法、建议或问候！</p>-->
-<!--                <p class="guestbook-notice">基于GitHub Discussions的评论系统，需要GitHub账号登录后才能评论。</p>-->
-<!--            </div>-->
-<!--            -->
-<!--            &lt;!&ndash; Giscus 评论容器 - 修改为直接嵌入版本，解决跨域问题 &ndash;&gt;-->
-<!--            <div id="giscus-container" class="giscus-container">-->
-<!--                <script src="https://giscus.app/client.js"-->
-<!--                    data-repo="deerwan/homepage"-->
-<!--                    data-repo-id="R_kgDONnyo4Q"-->
-<!--                    data-category="Announcements"-->
-<!--                    data-category-id="DIC_kwDONnyo4c4CsCfJ"-->
-<!--                    data-mapping="pathname"-->
-<!--                    data-strict="0"-->
-<!--                    data-reactions-enabled="1"-->
-<!--                    data-emit-metadata="0"-->
-<!--                    data-input-position="top"-->
-<!--                    data-theme="dark_dimmed"-->
-<!--                    data-lang="zh-CN"-->
-<!--                    data-loading="lazy"-->
-<!--                    crossorigin="anonymous"-->
-<!--                    async>-->
-<!--                </script>-->
-<!--                <noscript>请启用JavaScript以使用评论系统。</noscript>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
-    
-    
-    <!-- 友链板块 -->
-<!--    <section id="friends" class="section" aria-label="友链">-->
-<!--      <div class="about-container">-->
-<!--        <a href="#" class="back-btn" id="back-btn-friends"><i class="fas fa-arrow-left" aria-hidden="true"></i> <span>返回</span></a>-->
-<!--        <h2 class="section-title">友链</h2>-->
-<!--        <div class="friends-list">-->
-<!--          <a class="friend-item" href="https://linux.do/" target="_blank" rel="noopener">-->
-<!--            <img src="https://www.faviconextractor.com/favicon/linux.do" alt="LINUX DO" width="48" height="48" class="avatar-round">-->
-<!--            <div>-->
-<!--              <div class="friend-name">LINUX DO</div>-->
-<!--              <div class="friend-desc">新的理想型社区</div>-->
-<!--            </div>-->
-<!--          </a>-->
-<!--          -->
-<!--          &lt;!&ndash; 友链模板：复制以下结构添加新友链 &ndash;&gt;-->
-<!--          <a class="friend-item" href="https://linux.do/" target="_blank" rel="noopener">-->
-<!--            <img src="https://www.faviconextractor.com/favicon/linux.do" alt="站点名称" width="48" height="48" class="avatar-round">-->
-<!--            <div>-->
-<!--              <div class="friend-name">LINUX DO</div>-->
-<!--              <div class="friend-desc">新的理想型社区</div>-->
-<!--            </div>-->
-<!--          </a>-->
-<!--          &lt;!&ndash; 可继续添加更多友链 &ndash;&gt;-->
-
-
-<!--        </div>-->
-<!--        &lt;!&ndash; 友链提交入口 &ndash;&gt;-->
-<!--        <div class="friend-submit mt-2">-->
-<!--          <h3>申请友链</h3>-->
-<!--          <form id="friend-link-form">-->
-<!--            <input type="text" name="name" placeholder="您的网站名称" required class="mb-05">-->
-<!--            <input type="url" name="url" placeholder="您的网站链接" required class="mb-05">-->
-<!--            <input type="url" name="logo" placeholder="Logo图片链接（可选）" class="mb-05">-->
-<!--            <textarea name="desc" placeholder="网站描述（可选）" rows="2" class="mb-05"></textarea>-->
-<!--            <div class="mb-05" style="text-align:left; color:#fff;">-->
-<!--              <label style="margin-right:1.5rem;">-->
-<!--                <input type="radio" name="pushType" value="telegram" required> Telegram-->
-<!--              </label>-->
-<!--              <label>-->
-<!--                <input type="radio" name="pushType" value="feishu" required> 飞书-->
-<!--              </label>-->
-<!--            </div>-->
-<!--            <button type="submit">提交申请</button>-->
-<!--          </form>-->
-<!--          <div id="friend-link-result" class="friend-result"></div>-->
-<!--        </div>-->
-<!--        </div>-->
-<!--    </section>-->
     
     <!-- 个人导航板块 -->
     <section id="navigation" class="section" aria-label="个人导航">
@@ -384,8 +334,8 @@
     <footer class="footer" role="contentinfo">
         <div class="footer-content">
             <p>
-                Deer &copy; <span id="current-year"></span>
-                <a href="https://github.com/deerwan/homepage_demo" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; margin-left: 10px;">
+                CJZ &copy; <span id="current-year"></span>
+                <a href="https://github.com/cuijianzhuang/homepage_re" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; margin-left: 10px;">
                     <i class="ri-github-fill"></i> GitHub
                 </a>
             </p>
@@ -411,30 +361,5 @@
     }
     </script>
 
-    <!-- 网易云歌单播放器（APlayer + MetingJS）
-         lrc-type="0" 表示关闭歌词显示，autoplay="true" 表示自动播放
-         添加 api 属性支持 VIP 歌曲播放 -->
-    <meting-js
-        server="netease"
-        type="playlist"
-        id="961896580"
-        api="https://v.iarc.top/api?server=:server&type=:type&id=:id&auth=:auth&r=:r"
-        fixed="true"
-        autoplay="true"
-        order="random"
-        theme="#4a89dc"
-        loop="all"
-        preload="auto"
-        volume="0.7"
-        lrc-type="0">
-    </meting-js>
-    <!-- APlayer CSS（音乐播放器样式） -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
-    <!-- APlayer JS（音乐播放器功能） -->
-    <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
-    <!-- MetingJS（支持网易云等歌单，需在APlayer后引入） -->
-    <script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
-    
-    <!-- Giscus 评论系统已在留言板部分实现，此处移除重复代码 -->
 </body>
 </html>

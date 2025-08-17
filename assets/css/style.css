@@ -1,19 +1,12 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap'); */
 
 @font-face {
-    font-family: 'Noto Sans SC';
-    src: url('../fonts/NotoSansSC-Regular.woff2') format('woff2');
+    font-family: 'LXGW WenKai';
+    src: url('../fonts/LXGWWenKai-Regular.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
-    font-display: optional;
-}
-
-@font-face {
-    font-family: 'Noto Sans SC';
-    src: url('../fonts/NotoSansSC-Bold.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
-    font-display: optional;
+    font-display: fallback;
+    unicode-range: U+4E00-9FFF, U+3400-4DBF, U+20000-2A6DF, U+2A700-2B73F, U+2B740-2B81F, U+2B820-2CEAF, U+F900-FAFF, U+2F800-2FA1F;
 }
 
 /* 以下为 index.html 内联样式自动分离 */
@@ -27,14 +20,14 @@
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --shadow-standard: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --font-main: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    --font-main: 'LXGW WenKai', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 body {
     margin: 0;
     padding: 0;
     height: 100vh;
     background-color: var(--dark-bg);
-    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'LXGW WenKai', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     position: relative;
     overflow-x: hidden;
     cursor: url('../img/mouse.png'), auto;
@@ -993,4 +986,40 @@ a, button, .nav-item, .back-btn {
         align-items: center;
         justify-content: center;
     }
+}
+
+/* APlayer 歌词显示样式 */
+.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-loaded {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played {
+    background: #4a89dc;
+}
+
+.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb {
+    background: #4a89dc;
+}
+
+/* 确保歌词区域可见 */
+.aplayer .aplayer-info .aplayer-lrc {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.aplayer .aplayer-info .aplayer-lrc .aplayer-lrc-contents {
+    display: block !important;
+}
+
+.aplayer .aplayer-info .aplayer-lrc .aplayer-lrc-contents p {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* 歌词高亮样式 */
+.aplayer .aplayer-info .aplayer-lrc .aplayer-lrc-contents p.aplayer-lrc-current {
+    color: #4a89dc !important;
+    font-weight: bold !important;
 }
