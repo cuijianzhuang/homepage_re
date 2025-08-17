@@ -173,6 +173,9 @@ function fallbackHitokoto() {
 // 包含：自动设置年份、返回按钮处理、表单处理、导航高亮等
 
 document.addEventListener('DOMContentLoaded', function() {
+    // 优雅地清理URL
+    cleanUrl();
+    
     // 立即设置基础内容，不等待外部资源
     setInitialBackground();
     fallbackHitokoto();
@@ -187,19 +190,29 @@ document.addEventListener('DOMContentLoaded', function() {
     var yearSpan = document.getElementById('current-year');
     if(yearSpan) yearSpan.textContent = new Date().getFullYear();
 
-    // 统一处理所有返回按钮，点击后清空hash，返回主页
+    // 统一处理所有返回按钮，点击后返回主页
     document.querySelectorAll('.back-btn').forEach(function(btn){
         btn.addEventListener('click', function(e){
             e.preventDefault();
-            window.location.hash = '';
+            // 优雅地返回主页
+            navigateToHome();
         });
     });
 
     // 设置当前活动的导航项
     setActiveNavItem();
 
-    // 监听hash变化
-    window.addEventListener('hashchange', setActiveNavItem);
+    // 监听hash变化，添加平滑过渡
+    window.addEventListener('hashchange', function() {
+        // 添加平滑过渡效果
+        document.body.style.transition = 'opacity 0.3s ease';
+        document.body.style.opacity = '0.8';
+        
+        setTimeout(() => {
+            setActiveNavItem();
+            document.body.style.opacity = '1';
+        }, 150);
+    });
 
 
     
@@ -323,6 +336,47 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('touchstart', tryPlay);
 });
 
+// URL管理函数
+function cleanUrl() {
+    // 如果URL中有无效的hash（如 #），则清理
+    if (window.location.hash === '#') {
+        history.replaceState(null, document.title, window.location.pathname);
+    }
+}
+
+function navigateToHome() {
+    // 优雅地返回主页
+    if (window.location.hash) {
+        // 添加返回动画效果
+        const currentSection = document.querySelector('.section:target');
+        if (currentSection) {
+            currentSection.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+            currentSection.style.transform = 'translateY(100%)';
+            currentSection.style.opacity = '0';
+        }
+        
+        // 延迟执行导航，让动画有时间播放
+        setTimeout(() => {
+            // 使用 pushState 而不是 replaceState，这样用户可以正常使用浏览器的前进后退
+            history.pushState(null, document.title, window.location.pathname);
+            // 触发导航状态更新
+            setActiveNavItem();
+            
+            // 重置section样式
+            if (currentSection) {
+                currentSection.style.transform = '';
+                currentSection.style.opacity = '';
+            }
+        }, 400);
+    }
+}
+
+// 监听浏览器前进后退按钮
+window.addEventListener('popstate', function() {
+    // 当用户使用浏览器的前进后退按钮时，更新导航状态
+    setActiveNavItem();
+});
+
 // 从 index.html 移动过来的函数
 // 设置当前活动的导航项
 function setActiveNavItem() {
@@ -333,13 +387,13 @@ function setActiveNavItem() {
     navItems.forEach(item => item.classList.remove('active'));
 
     // 根据当前hash设置active类
-    if (hash) {
+    if (hash && hash !== '#') {
         const activeItem = document.querySelector(`.nav-item[href="${hash}"]`);
         if (activeItem) {
             activeItem.classList.add('active');
         }
     }
-    // 如果没有hash，则不设置任何活动项
+    // 如果没有hash或只有#，则不设置任何活动项
 }
 
 document.addEventListener('click', function(e) {
