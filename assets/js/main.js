@@ -2,7 +2,7 @@
 const CONFIG = {
     BING_WALLPAPER_URL: 'https://bing.img.run/rand.php', // 必应壁纸API
     BING_FALLBACK_URL: 'https://api.dujin.org/bing/1920.php', // 备用壁纸API
-    HITOKOTO_API: 'https://v.api.aa1.cn/api/yiyan/index.php', // 新一言API
+    HITOKOTO_API: 'https://v1.hitokoto.cn/?c=k&c=d&c=i', // 一言API
     FRIEND_LINK_API: 'https://home-push-friend-link.952780.xyz/' // 友链推送API地址
 };
 
@@ -115,7 +115,7 @@ async function getHitokoto() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000); // 3秒超时
         
-        // 直接使用fetch请求新API
+        // 使用fetch请求一言API
         const response = await fetch(CONFIG.HITOKOTO_API, {
             signal: controller.signal
         });
@@ -125,7 +125,7 @@ async function getHitokoto() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const text = await response.text();
+        const data = await response.json();
         
         // 添加淡入效果
         const hitokotoText = document.querySelector('.hitokoto-text');
@@ -135,9 +135,9 @@ async function getHitokoto() {
         hitokotoText.style.opacity = '0';
         hitokotoFrom.style.opacity = '0';
         
-        // 更新文本内容 - 新API直接返回文本
-        hitokotoText.textContent = text.trim();
-        hitokotoFrom.textContent = '- [每日一言]';
+        // 更新文本内容 - 使用API返回的数据
+        hitokotoText.textContent = data.hitokoto;
+        hitokotoFrom.textContent = `- [${data.from}]`;
         
         // 使用setTimeout实现淡入效果
         setTimeout(() => {
@@ -155,9 +155,20 @@ async function getHitokoto() {
 
 // 一言API失败时的备用显示
 function fallbackHitokoto() {
-    // 设置默认一言
-    document.querySelector('.hitokoto-text').textContent = '哪有什么岁月静好，不过是有人在替你负重前行。';
-    document.querySelector('.hitokoto-from').textContent = '- [网络]';
+    // 备用一言数组
+    const fallbackQuotes = [
+        { text: '一个人之所以幸福,并不是他得天独厚,只是那个人心想着幸福,为忘记痛苦而努力,为变得幸福而努力。', from: '每日一言' },
+        { text: '哪有什么岁月静好，不过是有人在替你负重前行。', from: '网络' },
+        { text: '生活不是等待暴风雨过去，而是学会在雨中跳舞。', from: '网络' },
+        { text: '每一个不曾起舞的日子，都是对生命的辜负。', from: '尼采' },
+        { text: '人生就像一场旅行，不必在乎目的地，在乎的是沿途的风景以及看风景的心情。', from: '网络' }
+    ];
+    
+    // 随机选择一个备用一言
+    const randomQuote = fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
+    
+    document.querySelector('.hitokoto-text').textContent = randomQuote.text;
+    document.querySelector('.hitokoto-from').textContent = `- [${randomQuote.from}]`;
 }
 
 // 已删除未使用的formatDate函数
