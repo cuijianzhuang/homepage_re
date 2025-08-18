@@ -13,7 +13,7 @@
 :root {
     --primary-color: #ffffff;
     --secondary-color: #f1f1f1;
-    --accent-color: #4a89dc;
+    --accent-color: #0270ff;
     --dark-bg: #121212;
     --overlay-bg: rgba(0, 0, 0, 0.3);
     --border-radius: 10px;
@@ -21,6 +21,7 @@
     --transition-normal: 0.3s ease;
     --shadow-standard: 0 4px 6px rgba(0, 0, 0, 0.1);
     --font-main: 'LXGW WenKai', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    --aplayer-sticky-bg-alpha: 0.8; /* 当前播放置顶项背景透明度 (0~1) */
 }
 body {
     margin: 0;
@@ -1239,9 +1240,28 @@ a, button, .nav-item, .back-btn {
 /* 列表可读性 */
 .aplayer .aplayer-list ol li { color: rgba(255,255,255,0.92) !important; border-color: rgba(255,255,255,0.08) !important; }
 .aplayer .aplayer-list ol li:hover { background: rgba(255,255,255,0.08) !important; }
-.aplayer .aplayer-list ol li.aplayer-list-light { background: rgba(74,137,220,0.25) !important; }
+.aplayer .aplayer-list ol li.aplayer-list-light { background: rgba(0,0,0,var(--aplayer-sticky-bg-alpha)) !important; border-left: 3px solid var(--accent-color) !important; }
 .aplayer .aplayer-list .aplayer-list-index,
 .aplayer .aplayer-list .aplayer-list-author { color: rgba(255,255,255,0.7) !important; }
+
+/* 让播放列表可滚动，支持 Sticky 置顶当前曲目 */
+.aplayer .aplayer-list {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* 当前播放曲目置顶（视觉置顶，不改变原有顺序） */
+.aplayer .aplayer-list ol li.aplayer-list-light {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    backdrop-filter: saturate(1.1);
+}
+
+/* 悬停时稍微提高可见性 */
+.aplayer .aplayer-list ol li.aplayer-list-light:hover {
+    background: rgba(0,0,0, calc(var(--aplayer-sticky-bg-alpha) + 0.1)) !important;
+}
 
 /* 歌词可读性 */
 .aplayer .aplayer-lrc p { color: rgba(255,255,255,0.9) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }

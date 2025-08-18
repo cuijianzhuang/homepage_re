@@ -50,6 +50,38 @@
     } else {
         mount(el);
     }
+
+    // 当前播放置顶：等待 APlayer 实例就绪后绑定事件
+    function whenAplayerReady(metingEl, callback){
+        var maxWaitMs = 8000;
+        var start = Date.now();
+        (function tick(){
+            if (metingEl && metingEl.aplayer) return callback(metingEl.aplayer);
+            if (Date.now() - start > maxWaitMs) return; // 放弃
+            requestAnimationFrame(tick);
+        })();
+    }
+
+    function scrollCurrentToTop(ap){
+        try {
+            var root = ap.container || ap.element || (ap.template && ap.template.body) || null;
+            if (!root) return;
+            var list = root.querySelector && root.querySelector('.aplayer-list');
+            if (!list || list.classList.contains('aplayer-list-hide')) return;
+            var current = list.querySelector('li.aplayer-list-light');
+            if (!current) return;
+            list.scrollTop = current.offsetTop;
+        } catch(e) { /* noop */ }
+    }
+
+    whenAplayerReady(el, function(ap){
+        // 初次显示列表时置顶
+        ['listshow', 'listswitch', 'play'].forEach(function(evt){
+            try { ap.on(evt, function(){ setTimeout(function(){ scrollCurrentToTop(ap); }, 0); }); } catch(e){}
+        });
+        // 初始尝试
+        setTimeout(function(){ scrollCurrentToTop(ap); }, 600);
+    });
 })();
 
 
