@@ -1183,38 +1183,66 @@ a, button, .nav-item, .back-btn {
     isolation: isolate;
 }
 
-/* APlayer 歌词显示样式 */
-.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-loaded {
-    background: rgba(255, 255, 255, 0.3);
-}
+/* APlayer 使用默认样式，移除进度条自定义以恢复原布局 */
 
-.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played {
-    background: #4a89dc;
-}
-
-.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb {
-    background: #4a89dc;
-}
-
-/* 确保歌词区域可见 */
-.aplayer .aplayer-info .aplayer-lrc {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-.aplayer .aplayer-info .aplayer-lrc .aplayer-lrc-contents {
-    display: block !important;
-}
-
-.aplayer .aplayer-info .aplayer-lrc .aplayer-lrc-contents p {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
+/* 歌词区域：仅在非固定/非迷你模式下显示，避免固定迷你模式出现空白占位 */
+/* 移除歌词区域强制显示/隐藏，遵循 APlayer 默认 */
 
 /* 歌词高亮样式 */
 .aplayer .aplayer-info .aplayer-lrc .aplayer-lrc-contents p.aplayer-lrc-current {
     color: #4a89dc !important;
     font-weight: bold !important;
 }
+
+/* 移除固定/迷你样式与配色覆盖，回退到 APlayer 默认 */
+
+/* 播放列表样式（展开时） */
+/* 播放列表样式恢复默认 */
+
+/* 歌词可读性增强 */
+/* 歌词样式恢复默认 */
+
+/* 移动端适配：缩放迷你播放器，避免遮挡 */
+/* 移除自定义移动端定位，使用默认 */
+
+/* ===== APlayer 高对比度配色（仅视觉，不改布局） ===== */
+.aplayer,
+.aplayer .aplayer-info,
+.aplayer .aplayer-list {
+    color: #fff;
+}
+
+/* 固定迷你播放器与列表背景加深提亮对比 */
+.aplayer.aplayer-fixed .aplayer-body,
+.aplayer .aplayer-list {
+    background: rgba(0, 0, 0, 0.72) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 标题与作者文案提亮 */
+.aplayer .aplayer-title { color: rgba(255,255,255,0.95) !important; }
+.aplayer .aplayer-author { color: rgba(255,255,255,0.75) !important; }
+
+/* 控制按钮与音量图标对比度 */
+.aplayer .aplayer-icon path, .aplayer .aplayer-icon svg { fill: #ffffff !important; }
+.aplayer .aplayer-icon:hover path, .aplayer .aplayer-icon:hover svg { fill: var(--accent-color) !important; }
+
+/* 进度条与音量条配色（仅颜色） */
+.aplayer .aplayer-bar-wrap .aplayer-bar { background: rgba(255,255,255,0.25) !important; }
+.aplayer .aplayer-controller .aplayer-time { color: rgba(255,255,255,0.8) !important; }
+.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-loaded { background: rgba(255,255,255,0.35) !important; }
+.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played { background: var(--accent-color) !important; }
+.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb { background: var(--accent-color) !important; }
+.aplayer .aplayer-volume-bar { background: rgba(255,255,255,0.25) !important; }
+.aplayer .aplayer-volume .aplayer-volume-bar .aplayer-volume { background: var(--accent-color) !important; }
+
+/* 列表可读性 */
+.aplayer .aplayer-list ol li { color: rgba(255,255,255,0.92) !important; border-color: rgba(255,255,255,0.08) !important; }
+.aplayer .aplayer-list ol li:hover { background: rgba(255,255,255,0.08) !important; }
+.aplayer .aplayer-list ol li.aplayer-list-light { background: rgba(74,137,220,0.25) !important; }
+.aplayer .aplayer-list .aplayer-list-index,
+.aplayer .aplayer-list .aplayer-list-author { color: rgba(255,255,255,0.7) !important; }
+
+/* 歌词可读性 */
+.aplayer .aplayer-lrc p { color: rgba(255,255,255,0.9) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+.aplayer .aplayer-lrc p.aplayer-lrc-current { color: var(--accent-color) !important; }
