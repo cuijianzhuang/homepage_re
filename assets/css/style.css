@@ -1250,12 +1250,24 @@ a, button, .nav-item, .back-btn {
     overflow-y: auto;
 }
 
-/* 当前播放曲目置顶（视觉置顶，不改变原有顺序） */
+/* 当前播放曲目固定在底部（视觉固定，不改变原有顺序） */
 .aplayer .aplayer-list ol li.aplayer-list-light {
-    position: sticky;
-    top: 0;
+    position: sticky !important;
+    bottom: 0 !important;
+    top: auto !important;
     z-index: 2;
     backdrop-filter: saturate(1.1);
+}
+/* 当列表向上滚动时，将吸附位置切换为顶部 */
+.aplayer .aplayer-list.scrolling-up ol li.aplayer-list-light {
+    top: var(--aplayer-header-h, 0px) !important;
+    bottom: auto !important;
+}
+
+/* 当列表向下滚动时，将吸附位置切换为底部 */
+.aplayer .aplayer-list.scrolling-down ol li.aplayer-list-light {
+    bottom: 0 !important;
+    top: auto !important;
 }
 
 /* 悬停时稍微提高可见性 */
